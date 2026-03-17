@@ -12,39 +12,53 @@ import java.util.List;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    // TODO: Declare a private final ProductService field
+    private final ProductService productService;
 
-
-    // TODO: Constructor that takes ProductService as parameter
-
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
-        // TODO: Implement
-        return null;
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> searchByName(@RequestParam String keyword) {
+        List<Product> result = productService.searchByName(keyword);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<Product>> searchByCategory(@PathVariable String category) {
+        List<Product> result = productService.searchByCategory(category);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        // TODO: Implement
-        return null;
+        return productService.getProductById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        // TODO: Implement
-        return null;
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.createProduct(product));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        // TODO: Implement
-        return null;
+        return productService.updateProduct(id, product)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        // TODO: Implement
-        return null;
+        return productService.deleteProduct(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

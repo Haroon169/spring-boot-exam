@@ -10,37 +10,47 @@ import java.util.Optional;
 @Service
 public class ProductService {
 
-    // TODO: Declare a private final ProductRepository field
+    private final ProductRepository productRepository;
 
-
-    // TODO: Constructor that takes ProductRepository as parameter (constructor injection)
-
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository; // Constructor injection
+    }
 
     public List<Product> getAllProducts() {
-        // TODO: Delegate to repository
-        return null;
+        return productRepository.findAll();
     }
 
     public Optional<Product> getProductById(Long id) {
-        // TODO: Delegate to repository
-        return Optional.empty();
+        return productRepository.findById(id);
     }
 
     public Product createProduct(Product product) {
-        // TODO: Delegate to repository
-        return null;
+        return productRepository.save(product);
     }
 
     public Optional<Product> updateProduct(Long id, Product updated) {
-        // TODO: Find existing product by ID
-        // TODO: If found, update its name, category, price, and quantity
-        // TODO: Save and return the updated product
-        // TODO: If not found, return Optional.empty()
-        return Optional.empty();
+        return productRepository.findById(id).map(existing -> {
+            existing.setName(updated.getName());
+            existing.setCategory(updated.getCategory());
+            existing.setPrice(updated.getPrice());
+            existing.setQuantity(updated.getQuantity());
+            return productRepository.save(existing);
+        });
+    }
+
+    public List<Product> searchByName(String keyword) {
+        return productRepository.findByNameContaining(keyword);
+    }
+
+    public List<Product> searchByCategory(String category) {
+        return productRepository.findByCategory(category);
     }
 
     public boolean deleteProduct(Long id) {
-        // TODO: Delegate to repository
+        if (productRepository.existsById(id)) {
+            productRepository.deleteById(id);
+            return true;
+        }
         return false;
     }
 }
